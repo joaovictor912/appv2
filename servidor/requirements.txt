@@ -1,0 +1,6 @@
+Flask
+gunicorn
+roboflow
+opencv-python-headless
+numpy
+imutils
