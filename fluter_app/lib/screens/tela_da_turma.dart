@@ -42,12 +42,12 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                   TextField(
                     controller: nomeController,
                     autofocus: true,
-                    
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(labelText: 'Nome da Prova'),
                   ),
                   TextField(
                     controller: questoesController,
-                    
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(labelText: 'Nº de Questões'),
                     keyboardType: TextInputType.number,
                   ),
@@ -60,7 +60,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.calendar_today,color: Colors.white),
+                        icon: const Icon(Icons.calendar_today, color: Colors.white),
                         onPressed: () async {
                           final DateTime? dataEscolhida = await showDatePicker(
                             context: context,
@@ -154,6 +154,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
+                    // CORREÇÃO APLICADA AQUI para nomear a rota
                     settings: const RouteSettings(name: '/telaDaProva'),
                     builder: (context) => TelaDaProva(
                       prova: prova,
@@ -161,7 +162,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                       onDadosAlterados: widget.onDadosAlterados,
                     ),
                   ),
-                ).then((_) => setState((){})); 
+                ).then((_) => setState((){})); // Atualiza a tela ao voltar
               },
             ),
           );

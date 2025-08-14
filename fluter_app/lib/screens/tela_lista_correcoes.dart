@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/prova.dart';
-import 'tela_detalhe_correcao.dart'; // Tela que vamos criar a seguir
+import 'tela_detalhe_correcao.dart'; 
 
 class TelaListaCorrecoes extends StatelessWidget {
   final Prova prova;
@@ -24,13 +24,15 @@ class TelaListaCorrecoes extends StatelessWidget {
     linhas.add(["Nome do Aluno", "Nota"]);
 
     for (var correcao in prova.correcoes) {
+      // Substitui o ponto por vírgula para o padrão de nota local
+      final notaFormatada = correcao.nota.toStringAsFixed(1).replaceAll('.', ',');
       linhas.add([
         correcao.nomeAluno,
-        correcao.nota.toStringAsFixed(1),
+        notaFormatada,
       ]);
     }
 
-    String csv = const ListToCsvConverter().convert(linhas);
+    String csv = const ListToCsvConverter(fieldDelimiter: ';').convert(linhas);
     final directory = await getApplicationDocumentsDirectory();
     final path = "${directory.path}/relatorio_simplificado_${prova.nome.replaceAll(' ', '_')}.csv";
     final file = File(path);

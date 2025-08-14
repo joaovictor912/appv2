@@ -152,7 +152,7 @@ class _TelaResultadoState extends State<TelaResultado> {
             style: TextButton.styleFrom(foregroundColor: Colors.white),
             onPressed: () {
               // Envia o sinal "true" para iniciar a reação em cadeia de retorno
-              Navigator.of(context).pop(true);
+              Navigator.popUntil(context, ModalRoute.withName('/telaDaProva'));
             },
             icon: const Icon(Icons.check_circle),
             label: const Text('CONCLUIR'),

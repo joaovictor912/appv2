@@ -21,20 +21,24 @@ class TelaDaProva extends StatefulWidget {
 }
 
 class _TelaDaProvaState extends State<TelaDaProva> {
-  final TextEditingController _nomeAlunoController = TextEditingController();
+  // O controlador foi removido daqui para ser criado dentro da função.
+  // final TextEditingController _nomeAlunoController = TextEditingController();
 
   Future<void> _iniciarCorrecao() async {
+    // --- MUDANÇA 1: O controlador é criado aqui ---
+    // Isto garante um controlador novo e vazio a cada chamada.
+    final nomeAlunoController = TextEditingController();
+
     final nomeAluno = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Nova Correção'),
         content: TextField(
-          controller: _nomeAlunoController,
+          // --- MUDANÇA 2: Usamos o novo controlador local ---
+          controller: nomeAlunoController,
           autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Nome do Aluno',
-            hintStyle: TextStyle(color: Colors.black), 
-          ),
+          style: const TextStyle(color: Colors.black), 
+          decoration: const InputDecoration(hintText: 'Nome do Aluno'),
           textCapitalization: TextCapitalization.words,
         ),
         actions: [
@@ -42,17 +46,18 @@ class _TelaDaProvaState extends State<TelaDaProva> {
           ElevatedButton(
             child: const Text('Continuar'),
             onPressed: () {
-              if (_nomeAlunoController.text.isNotEmpty) {
-                Navigator.pop(context, _nomeAlunoController.text);
+              if (nomeAlunoController.text.isNotEmpty) {
+                Navigator.pop(context, nomeAlunoController.text);
               }
             },
           ),
         ],
       ),
     );
-    // ... o resto da sua função continua igual
+
+    // O controlador local é descartado automaticamente quando a função termina.
+
     if (nomeAluno != null && nomeAluno.isNotEmpty) {
-      _nomeAlunoController.clear();
       if (!mounted) return;
 
       await Navigator.push(
@@ -90,7 +95,7 @@ class _TelaDaProvaState extends State<TelaDaProva> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   textStyle: const TextStyle(fontSize: 18),
                 ),
-                icon: const Icon(Icons.camera_alt,color: Colors.white),
+                icon: const Icon(Icons.camera_alt),
                 label: const Text('Nova Correção'),
                 onPressed: _iniciarCorrecao,
               ),
@@ -109,8 +114,6 @@ class _TelaDaProvaState extends State<TelaDaProva> {
                       builder: (context) => TelaListaCorrecoes(prova: widget.prova),
                     ),
                   ).then((_) {
-                    // Quando voltar da tela de lista, atualiza o estado
-                    // caso alguma correção tenha sido apagada (funcionalidade futura)
                     setState(() {});
                   });
                 },
