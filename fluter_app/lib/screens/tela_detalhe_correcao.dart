@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/correcao.dart';
-import 'tela_resultado.dart'; // Reutilizamos a classe DetalheQuestao
+import 'tela_resultado.dart';
 
 class TelaDetalheCorrecao extends StatelessWidget {
   final Correcao correcao;

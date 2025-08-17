@@ -24,6 +24,7 @@ class TelaDaTurma extends StatefulWidget {
 }
 
 class _TelaDaTurmaState extends State<TelaDaTurma> {
+  // A função _mostrarDialogoNovaProva permanece exatamente a mesma.
   void _mostrarDialogoNovaProva() {
     final TextEditingController nomeController = TextEditingController();
     final TextEditingController questoesController = TextEditingController();
@@ -42,12 +43,12 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                   TextField(
                     controller: nomeController,
                     autofocus: true,
-                    style: const TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(labelText: 'Nome da Prova'),
                   ),
                   TextField(
                     controller: questoesController,
-                    style: const TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(labelText: 'Nº de Questões'),
                     keyboardType: TextInputType.number,
                   ),
@@ -126,46 +127,81 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
         itemCount: widget.turma.provas.length,
         itemBuilder: (context, index) {
           final prova = widget.turma.provas[index];
-          return Card(
-            child: ListTile(
-              leading: Icon(
-                Icons.article_outlined,
-                color: Theme.of(context).colorScheme.primary,
-                size: 30,
-              ),
-              title: Text(prova.nome, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text("${prova.correcoes.length} correções • ${prova.numeroDeQuestoes} questões"),
-              trailing: IconButton(
-                icon: const Icon(Icons.playlist_add_check),
-                tooltip: 'Editar Gabarito',
-                onPressed: () {
+          
+          // --- INÍCIO DA ALTERAÇÃO ---
+          // Envolvemos o Card num widget Dismissible
+          return Dismissible(
+            // A chave (key) é essencial para o Flutter identificar o item a ser removido
+            key: Key(prova.id),
+            // Define a direção do arrasto (da direita para a esquerda)
+            direction: DismissDirection.endToStart,
+            // O fundo que aparece ao arrastar
+            background: Container(
+              color: Colors.redAccent,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Icon(Icons.delete_sweep, color: Colors.white),
+            ),
+            // A função que é executada após o item ser removido da tela
+            onDismissed: (direction) {
+              // Guarda o nome da prova para a mensagem de confirmação
+              final nomeProvaRemovida = prova.nome;
+              
+              // Remove a prova da lista e atualiza a interface
+              setState(() {
+                widget.turma.provas.removeAt(index);
+              });
+
+              // Chama a função para salvar o estado permanentemente
+              widget.onDadosAlterados();
+
+              // Mostra uma mensagem de confirmação
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('"${nomeProvaRemovida}" removida')),
+              );
+            },
+            // O filho do Dismissible é o nosso Card original
+            child: Card(
+              child: ListTile(
+                leading: Icon(
+                  Icons.article_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 30,
+                ),
+                title: Text(prova.nome, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text("${prova.correcoes.length} correções • ${prova.numeroDeQuestoes} questões"),
+                trailing: IconButton(
+                  icon: const Icon(Icons.playlist_add_check),
+                  tooltip: 'Editar Gabarito',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TelaGabaritoMestre(
+                          prova: prova,
+                          onGabaritoSalvo: widget.onDadosAlterados,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TelaGabaritoMestre(
+                      settings: const RouteSettings(name: '/telaDaProva'),
+                      builder: (context) => TelaDaProva(
                         prova: prova,
-                        onGabaritoSalvo: widget.onDadosAlterados,
+                        camera: widget.camera,
+                        onDadosAlterados: widget.onDadosAlterados,
                       ),
                     ),
-                  );
+                  ).then((_) => setState((){}));
                 },
               ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // CORREÇÃO APLICADA AQUI para nomear a rota
-                    settings: const RouteSettings(name: '/telaDaProva'),
-                    builder: (context) => TelaDaProva(
-                      prova: prova,
-                      camera: widget.camera,
-                      onDadosAlterados: widget.onDadosAlterados,
-                    ),
-                  ),
-                ).then((_) => setState((){})); // Atualiza a tela ao voltar
-              },
             ),
           );
+          // --- FIM DA ALTERAÇÃO ---
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

@@ -45,6 +45,7 @@ dependencies:
   csv: ^5.0.1
   share_plus: ^7.0.0
   google_fonts: ^6.1.0
+  excel: ^2.1.0
 
 dev_dependencies:
   flutter_test:
