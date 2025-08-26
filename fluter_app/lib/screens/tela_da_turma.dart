@@ -1,11 +1,12 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import '../models/aluno.dart';
 import '../models/prova.dart';
 import '../models/turma.dart';
 import 'tela_da_prova.dart';
 import 'tela_gabarito_mestre.dart';
+import 'tela_gerir_alunos.dart';
 
 class TelaDaTurma extends StatefulWidget {
   final Turma turma;
@@ -24,7 +25,6 @@ class TelaDaTurma extends StatefulWidget {
 }
 
 class _TelaDaTurmaState extends State<TelaDaTurma> {
-  // A função _mostrarDialogoNovaProva permanece exatamente a mesma.
   void _mostrarDialogoNovaProva() {
     final TextEditingController nomeController = TextEditingController();
     final TextEditingController questoesController = TextEditingController();
@@ -43,12 +43,12 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                   TextField(
                     controller: nomeController,
                     autofocus: true,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(labelText: 'Nome da Prova'),
                   ),
                   TextField(
                     controller: questoesController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(labelText: 'Nº de Questões'),
                     keyboardType: TextInputType.number,
                   ),
@@ -61,7 +61,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.calendar_today, color: Colors.white),
+                        icon: const Icon(Icons.calendar_today, color: Colors.black),
                         onPressed: () async {
                           final DateTime? dataEscolhida = await showDatePicker(
                             context: context,
@@ -93,6 +93,8 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
 
                       setState(() {
                         widget.turma.provas.add(
+                          // CORREÇÃO APLICADA AQUI
+                          // O parâmetro "turma" foi removido da criação da Prova.
                           Prova(
                             id: DateTime.now().toString(),
                             nome: nomeController.text,
@@ -121,46 +123,48 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.turma.nome),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.group_add_outlined),
+            tooltip: 'Gerir Alunos',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaGerirAlunos(
+                    turma: widget.turma,
+                    onDadosAlterados: widget.onDadosAlterados,
+                  ),
+                ),
+              ).then((_) => setState(() {}));
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
         itemCount: widget.turma.provas.length,
         itemBuilder: (context, index) {
           final prova = widget.turma.provas[index];
-          
-          // --- INÍCIO DA ALTERAÇÃO ---
-          // Envolvemos o Card num widget Dismissible
           return Dismissible(
-            // A chave (key) é essencial para o Flutter identificar o item a ser removido
             key: Key(prova.id),
-            // Define a direção do arrasto (da direita para a esquerda)
             direction: DismissDirection.endToStart,
-            // O fundo que aparece ao arrastar
             background: Container(
               color: Colors.redAccent,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: const Icon(Icons.delete_sweep, color: Colors.white),
+              child: const Icon(Icons.delete_sweep, color: Colors.black),
             ),
-            // A função que é executada após o item ser removido da tela
             onDismissed: (direction) {
-              // Guarda o nome da prova para a mensagem de confirmação
               final nomeProvaRemovida = prova.nome;
-              
-              // Remove a prova da lista e atualiza a interface
               setState(() {
                 widget.turma.provas.removeAt(index);
               });
-
-              // Chama a função para salvar o estado permanentemente
               widget.onDadosAlterados();
-
-              // Mostra uma mensagem de confirmação
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('"${nomeProvaRemovida}" removida')),
               );
             },
-            // O filho do Dismissible é o nosso Card original
             child: Card(
               child: ListTile(
                 leading: Icon(
@@ -191,6 +195,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
                     MaterialPageRoute(
                       settings: const RouteSettings(name: '/telaDaProva'),
                       builder: (context) => TelaDaProva(
+                        turma: widget.turma, // Passa a turma atual
                         prova: prova,
                         camera: widget.camera,
                         onDadosAlterados: widget.onDadosAlterados,
@@ -201,7 +206,6 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
               ),
             ),
           );
-          // --- FIM DA ALTERAÇÃO ---
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

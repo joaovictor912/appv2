@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/prova.dart';
 import 'tela_detalhe_correcao.dart';
+import 'tela_estatisticas.dart';
 
 class TelaListaCorrecoes extends StatelessWidget {
   final Prova prova;
@@ -22,27 +23,36 @@ class TelaListaCorrecoes extends StatelessWidget {
     var excel = Excel.createExcel();
     Sheet sheetObject = excel['Resultados'];
 
-    // Define os estilos das células
+    // Define os estilos que vamos usar
     var headerStyle = CellStyle(bold: true);
-    var redTextStyle = CellStyle(fontColorHex: "#FFFF0000"); // Vermelho
+    var redTextStyle = CellStyle(fontColorHex: "#FFFF0000");
 
-    // --- CÓDIGO CORRIGIDO E SIMPLIFICADO ---
-    // Adiciona o cabeçalho diretamente.
-    sheetObject.appendRow(['Nome do Aluno', 'Nota']);
+    // --- CÓDIGO CORRIGIDO ---
+    // Adiciona o cabeçalho com os valores de texto diretamente
+    sheetObject.appendRow(['Nome do Aluno', 'Nota', 'Acertos']);
     
-    // Aplica o estilo ao cabeçalho.
+    // Aplica o estilo de negrito ao cabeçalho
     sheetObject.cell(CellIndex.indexByString("A1")).cellStyle = headerStyle;
     sheetObject.cell(CellIndex.indexByString("B1")).cellStyle = headerStyle;
+    sheetObject.cell(CellIndex.indexByString("C1")).cellStyle = headerStyle;
+
 
     // Adiciona uma linha para cada correção
     for (int i = 0; i < prova.correcoes.length; i++) {
       final correcao = prova.correcoes[i];
-      // Adiciona os valores (String e double) diretamente na lista.
-      sheetObject.appendRow([correcao.nomeAluno, correcao.nota]);
+
+      // Adiciona os valores (String, double, int) diretamente na lista.
+      sheetObject.appendRow([
+        correcao.nomeAluno, 
+        correcao.nota,
+        correcao.acertos
+      ]);
 
       // Aplica a formatação condicional se a nota for menor que 6.
       if (correcao.nota < 6.0) {
+        // Pega a célula da nota na linha que acabamos de adicionar
         var cell = sheetObject.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1));
+        // Aplica o estilo de texto vermelho
         cell.cellStyle = redTextStyle;
       }
     }
@@ -72,6 +82,18 @@ class TelaListaCorrecoes extends StatelessWidget {
         title: const Text('Correções Salvas'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Ver Estatísticas',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TelaEstatisticas(prova: prova),
+                ),
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.download_rounded),
             tooltip: 'Exportar Relatório',
             onPressed: () => _exportarRelatorioExcel(context),
@@ -80,14 +102,15 @@ class TelaListaCorrecoes extends StatelessWidget {
       ),
       body: prova.correcoes.isEmpty
           ? const Center(
-              child: Text( 'Nenhuma correção foi salva para esta prova ainda.' ),
+              child: Text( 'Nenhuma correção foi salva para esta prova ainda.', textAlign: TextAlign.center),
             )
           : ListView.builder(
+              padding: const EdgeInsets.all(8.0),
               itemCount: prova.correcoes.length,
               itemBuilder: (context, index) {
                 final correcao = prova.correcoes.reversed.toList()[index];
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: ListTile(
                     title: Text(
                       correcao.nomeAluno,

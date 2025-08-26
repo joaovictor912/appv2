@@ -51,25 +51,19 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
   void _mostrarDialogoTurma({Turma? turmaExistente}) {
     final bool isEditing = turmaExistente != null;
     final nomeController = TextEditingController(text: isEditing ? turmaExistente.nome : '');
-    final alunosController = TextEditingController(text: isEditing ? turmaExistente.numeroDeAlunos.toString() : '');
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(isEditing ? 'Editar Turma' : 'Nova Turma'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            TextField(
-              controller: nomeController,
-              autofocus: true,
-              decoration: const InputDecoration(labelText: 'Nome da Turma'),
-            ),
-            TextField(
-              controller: alunosController,
-              decoration: const InputDecoration(labelText: 'Nº de Alunos'),
-              keyboardType: TextInputType.number,
-            ),
-          ]),
+          content: TextField(
+            controller: nomeController,
+            autofocus: true,
+            style: const TextStyle(color: Colors.black),
+            decoration: const InputDecoration(labelText: 'Nome da Turma'),
+            textCapitalization: TextCapitalization.words,
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -78,17 +72,15 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             ElevatedButton(
               onPressed: () {
                 final nome = nomeController.text;
-                final numeroDeAlunos = int.tryParse(alunosController.text) ?? 0;
                 if (nome.isNotEmpty) {
                   setState(() {
                     if (isEditing) {
-                      turmaExistente.nome = nome;
-                      turmaExistente.numeroDeAlunos = numeroDeAlunos;
+                      turmaExistente!.nome = nome;
                     } else {
                       _turmas.add(Turma(
-                        id: DateTime.now().toString(),
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
                         nome: nome,
-                        numeroDeAlunos: numeroDeAlunos,
+                        alunos: [], // A turma começa com uma lista de alunos vazia
                         provas: [],
                       ));
                     }

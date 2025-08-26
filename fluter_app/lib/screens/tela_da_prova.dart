@@ -1,16 +1,20 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import '../models/aluno.dart';
 import '../models/prova.dart';
+import '../models/turma.dart'; // Importa o modelo Turma
 import 'tela_da_camera.dart';
 import 'tela_lista_correcoes.dart';
 
 class TelaDaProva extends StatefulWidget {
+  final Turma turma; // Adiciona a turma aqui
   final Prova prova;
   final CameraDescription camera;
   final VoidCallback onDadosAlterados;
 
   const TelaDaProva({
     super.key,
+    required this.turma, // Torna a turma um parâmetro obrigatório
     required this.prova,
     required this.camera,
     required this.onDadosAlterados,
@@ -21,59 +25,65 @@ class TelaDaProva extends StatefulWidget {
 }
 
 class _TelaDaProvaState extends State<TelaDaProva> {
-  // O controlador foi removido daqui para ser criado dentro da função.
-  // final TextEditingController _nomeAlunoController = TextEditingController();
 
   Future<void> _iniciarCorrecao() async {
-    // --- MUDANÇA 1: O controlador é criado aqui ---
-    // Isto garante um controlador novo e vazio a cada chamada.
-    final nomeAlunoController = TextEditingController();
+    final nomesCorrigidos = widget.prova.correcoes.map((c) => c.nomeAluno).toSet();
+    // CORREÇÃO: Acessa a lista de alunos através de widget.turma.alunos
+    final alunosParaCorrigir = widget.turma.alunos.where((aluno) => !nomesCorrigidos.contains(aluno.nome)).toList();
 
-    final nomeAluno = await showDialog<String>(
+    if (widget.turma.alunos.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Adicione alunos à turma primeiro!"))
+        );
+        return;
+    }
+    
+    if (alunosParaCorrigir.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Todos os alunos já foram corrigidos!")),
+      );
+      return;
+    }
+
+    final Aluno? alunoSelecionado = await showDialog<Aluno>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nova Correção'),
-        content: TextField(
-          // --- MUDANÇA 2: Usamos o novo controlador local ---
-          controller: nomeAlunoController,
-          autofocus: true,
-          style: const TextStyle(color: Colors.black), 
-          decoration: const InputDecoration(hintText: 'Nome do Aluno'),
-          textCapitalization: TextCapitalization.words,
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-          ElevatedButton(
-            child: const Text('Continuar'),
-            onPressed: () {
-              if (nomeAlunoController.text.isNotEmpty) {
-                Navigator.pop(context, nomeAlunoController.text);
-              }
+        title: const Text('Selecionar Aluno'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: alunosParaCorrigir.length,
+            itemBuilder: (context, index) {
+              final aluno = alunosParaCorrigir[index];
+              return ListTile(
+                title: Text(aluno.nome),
+                onTap: () => Navigator.pop(context, aluno),
+              );
             },
           ),
-        ],
+        ),
       ),
     );
 
-    // O controlador local é descartado automaticamente quando a função termina.
-
-    if (nomeAluno != null && nomeAluno.isNotEmpty) {
+    if (alunoSelecionado != null) {
       if (!mounted) return;
-
-      await Navigator.push(
+      
+      final resultadoNavegacao = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          settings: const RouteSettings(name: '/telaDaProva'),
           builder: (context) => TelaDaCamera(
             prova: widget.prova,
             camera: widget.camera,
-            nomeAluno: nomeAluno,
+            nomeAluno: alunoSelecionado.nome,
             onDadosAlterados: widget.onDadosAlterados,
           ),
         ),
       );
       
-      setState(() {});
+      if (resultadoNavegacao == true) {
+        setState(() {});
+      }
     }
   }
 

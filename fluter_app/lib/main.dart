@@ -17,7 +17,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color corPrincipal = Color(0xFF00295B); // Seu azul "Obsidian Navy"
+    const Color corPrincipal = Color(0xFF00295B); // Obsidian Navy
+    const Color corDestaque = Color(0xFFFFA000);   // Um laranja/âmbar para destaque
+
+    
+    final textTheme = Theme.of(context).textTheme;
 
     return MaterialApp(
       title: 'Corretor de Gabaritos',
@@ -27,18 +31,25 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.light,
 
-       
-        colorScheme: const ColorScheme.light(
-          primary: corPrincipal,       // Cor de destaque principal (botões, ícones, etc.)
-          onPrimary: Colors.white,     // Cor para texto/ícones EM CIMA da cor primária.
-          background: Color(0xFFF5F5F5), // Fundo principal das telas (um branco suave)
-          onBackground: Colors.black,    // Texto sobre o fundo principal.
-          surface: Colors.white,       // Fundo de componentes como Cards.
-          onSurface: Colors.black87,   // Texto sobre os componentes de superfície.
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: corPrincipal,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: corPrincipal,
+          secondary: corDestaque, // Define a cor de destaque
         ),
-        // --- FIM DA MUDANÇA ---
         
-        textTheme: GoogleFonts.montserratTextTheme(),
+        // --- NOVA CONFIGURAÇÃO DE TEXTO ---
+        textTheme: GoogleFonts.interTextTheme(textTheme).copyWith(
+          // Títulos grandes (como na AppBar) usarão Poppins
+          displayLarge: GoogleFonts.poppins(textStyle: textTheme.displayLarge, fontWeight: FontWeight.bold),
+          displayMedium: GoogleFonts.poppins(textStyle: textTheme.displayMedium, fontWeight: FontWeight.bold),
+          displaySmall: GoogleFonts.poppins(textStyle: textTheme.displaySmall, fontWeight: FontWeight.bold),
+          headlineLarge: GoogleFonts.poppins(textStyle: textTheme.headlineLarge, fontWeight: FontWeight.bold),
+          headlineMedium: GoogleFonts.poppins(textStyle: textTheme.headlineMedium, fontWeight: FontWeight.bold),
+          headlineSmall: GoogleFonts.poppins(textStyle: textTheme.headlineSmall, fontWeight: FontWeight.bold),
+          titleLarge: GoogleFonts.poppins(textStyle: textTheme.titleLarge, fontWeight: FontWeight.bold),
+        ),
 
         appBarTheme: const AppBarTheme(
           backgroundColor: corPrincipal,
