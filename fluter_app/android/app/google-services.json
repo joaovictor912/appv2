@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "183764560118",
+    "project_id": "corretor-gabaritos-app",
+    "storage_bucket": "corretor-gabaritos-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:183764560118:android:114c6e97ae47db863da4d7",
+        "android_client_info": {
+          "package_name": "com.example.fluter_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAYRT20mus7S3Be3YeAzc4Dbk_QRqZP6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

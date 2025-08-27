@@ -1,12 +1,20 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firebase_options.dart';
+
 import 'screens/tela_principal.dart';
+import 'screens/tela_login.dart';
 
 late CameraDescription firstCamera;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   final cameras = await availableCameras();
   firstCamera = cameras.first;
   runApp(const MyApp());
@@ -17,31 +25,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color corPrincipal = Color(0xFF00295B); // Obsidian Navy
-    const Color corDestaque = Color(0xFFFFA000);   // Um laranja/âmbar para destaque
-
-    
+    const Color corPrincipal = Color(0xFF00295B);
+    const Color corDestaque = Color(0xFFFFA000);
     final textTheme = Theme.of(context).textTheme;
 
     return MaterialApp(
       title: 'Corretor de Gabaritos',
       debugShowCheckedModeBanner: false,
-      
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
-
         colorScheme: ColorScheme.fromSeed(
           seedColor: corPrincipal,
           brightness: Brightness.light,
         ).copyWith(
           primary: corPrincipal,
-          secondary: corDestaque, // Define a cor de destaque
+          secondary: corDestaque,
         ),
-        
-        // --- NOVA CONFIGURAÇÃO DE TEXTO ---
         textTheme: GoogleFonts.interTextTheme(textTheme).copyWith(
-          // Títulos grandes (como na AppBar) usarão Poppins
           displayLarge: GoogleFonts.poppins(textStyle: textTheme.displayLarge, fontWeight: FontWeight.bold),
           displayMedium: GoogleFonts.poppins(textStyle: textTheme.displayMedium, fontWeight: FontWeight.bold),
           displaySmall: GoogleFonts.poppins(textStyle: textTheme.displaySmall, fontWeight: FontWeight.bold),
@@ -50,24 +51,20 @@ class MyApp extends StatelessWidget {
           headlineSmall: GoogleFonts.poppins(textStyle: textTheme.headlineSmall, fontWeight: FontWeight.bold),
           titleLarge: GoogleFonts.poppins(textStyle: textTheme.titleLarge, fontWeight: FontWeight.bold),
         ),
-
         appBarTheme: const AppBarTheme(
           backgroundColor: corPrincipal,
           foregroundColor: Colors.white,
         ),
-
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: corPrincipal,
+          backgroundColor: corDestaque, // Usa a cor de destaque
           foregroundColor: Colors.white,
         ),
-
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: corPrincipal,
             foregroundColor: Colors.white,
           ),
         ),
-        
         cardTheme: CardThemeData(
           color: Colors.white,
           surfaceTintColor: Colors.white,
@@ -76,13 +73,39 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        
         listTileTheme: const ListTileThemeData(
           iconColor: corPrincipal,
         ),
       ),
-      
-      home: TelaPrincipal(camera: firstCamera),
+      // O ponto de entrada agora é o AuthGate, que decide qual tela mostrar.
+      home: const AuthGate(),
+    );
+  }
+}
+
+// Este widget é o "porteiro" que verifica se o utilizador está logado.
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      // Ouve continuamente as mudanças no estado de autenticação (login/logout).
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        // Se ainda estiver a verificar, mostra um indicador de carregamento.
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+       
+        if (snapshot.hasData) {
+          
+          return TelaPrincipal(camera: firstCamera);
+        }
+        
+        
+        return const TelaLogin();
+      },
     );
   }
 }
