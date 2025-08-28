@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:183764560118:android:114c6e97ae47db863da4d7",
+        "mobilesdk_app_id": "1:183764560118:android:78af17a3d9e581b53da4d7",
         "android_client_info": {
-          "package_name": "com.example.fluter_app"
+          "package_name": "com.corretordegabaritos.app"
         }
       },
       "oauth_client": [],

@@ -36,8 +36,9 @@ class TelaEstatisticas extends StatelessWidget {
     };
 
     for (var correcao in prova.correcoes) {
-      if (correcao.nota < 4.0) distribuicao['0-3.9'] = distribuicao['0-3.9']! + 1;
-      else if (correcao.nota < 7.0) distribuicao['4-6.9'] = distribuicao['4-6.9']! + 1;
+      if (correcao.nota < 4.0) {
+        distribuicao['0-3.9'] = distribuicao['0-3.9']! + 1;
+      } else if (correcao.nota < 7.0) distribuicao['4-6.9'] = distribuicao['4-6.9']! + 1;
       else if (correcao.nota < 9.0) distribuicao['7-8.9'] = distribuicao['7-8.9']! + 1;
       else distribuicao['9-10'] = distribuicao['9-10']! + 1;
     }

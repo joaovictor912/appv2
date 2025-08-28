@@ -42,17 +42,17 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyA2XWeGnln0QWiFnr_qPdgh87gz7mznm-E',
-    appId: '1:183764560118:web:636091ba316ac6343da4d7',
+    appId: '1:183764560118:web:ace05ba0df3c1f273da4d7',
     messagingSenderId: '183764560118',
     projectId: 'corretor-gabaritos-app',
     authDomain: 'corretor-gabaritos-app.firebaseapp.com',
     storageBucket: 'corretor-gabaritos-app.firebasestorage.app',
-    measurementId: 'G-KC7RLV64HG',
+    measurementId: 'G-VD9K4SHFD2',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDAYRT20mus7S3Be3YeAzc4Dbk_QRqZP6w',
-    appId: '1:183764560118:android:114c6e97ae47db863da4d7',
+    appId: '1:183764560118:android:78af17a3d9e581b53da4d7',
     messagingSenderId: '183764560118',
     projectId: 'corretor-gabaritos-app',
     storageBucket: 'corretor-gabaritos-app.firebasestorage.app',
@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBxBeNfKtqI4d5rFFwjediMEQVh_GZrZJg',
-    appId: '1:183764560118:ios:50a8b2026a6cd9263da4d7',
+    appId: '1:183764560118:ios:5f5c5c69ffa5525b3da4d7',
     messagingSenderId: '183764560118',
     projectId: 'corretor-gabaritos-app',
     storageBucket: 'corretor-gabaritos-app.firebasestorage.app',
@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBxBeNfKtqI4d5rFFwjediMEQVh_GZrZJg',
-    appId: '1:183764560118:ios:50a8b2026a6cd9263da4d7',
+    appId: '1:183764560118:ios:5f5c5c69ffa5525b3da4d7',
     messagingSenderId: '183764560118',
     projectId: 'corretor-gabaritos-app',
     storageBucket: 'corretor-gabaritos-app.firebasestorage.app',
@@ -78,11 +78,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyA2XWeGnln0QWiFnr_qPdgh87gz7mznm-E',
-    appId: '1:183764560118:web:8552426fe43daad33da4d7',
+    appId: '1:183764560118:web:1818ad7f44617e9d3da4d7',
     messagingSenderId: '183764560118',
     projectId: 'corretor-gabaritos-app',
     authDomain: 'corretor-gabaritos-app.firebaseapp.com',
     storageBucket: 'corretor-gabaritos-app.firebasestorage.app',
-    measurementId: 'G-RTQ8RPC62N',
+    measurementId: 'G-NC2LY5VE3Z',
   );
 }

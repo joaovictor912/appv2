@@ -75,7 +75,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                 if (nome.isNotEmpty) {
                   setState(() {
                     if (isEditing) {
-                      turmaExistente!.nome = nome;
+                      turmaExistente.nome = nome;
                     } else {
                       _turmas.add(Turma(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),

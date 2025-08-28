@@ -23,7 +23,7 @@ android {
     }
 
    defaultConfig {
-    applicationId = "com.example.fluter_app"
+    applicationId = "com.corretordegabaritos.app"
     minSdkVersion(24) 
     targetSdkVersion(flutter.targetSdkVersion)
     versionCode = flutter.versionCode.toString().toInt()

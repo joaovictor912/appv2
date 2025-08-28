@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../models/aluno.dart';
 import '../models/prova.dart';
 import '../models/turma.dart';
 import 'tela_da_prova.dart';
@@ -162,7 +161,7 @@ class _TelaDaTurmaState extends State<TelaDaTurma> {
               });
               widget.onDadosAlterados();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('"${nomeProvaRemovida}" removida')),
+                SnackBar(content: Text('"$nomeProvaRemovida" removida')),
               );
             },
             child: Card(
