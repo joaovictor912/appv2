@@ -1,3 +1,4 @@
+// O resto do seu arquivo original continua aqui
 allprojects {
     repositories {
         google()

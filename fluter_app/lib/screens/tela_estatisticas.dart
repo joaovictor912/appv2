@@ -139,7 +139,11 @@ class TelaEstatisticas extends StatelessWidget {
                                           case 3: text = '9-10'; break;
                                           default: text = ''; break;
                                         }
-                                        return SideTitleWidget(axisSide: meta.axisSide, space: 4, child: Text(text, style: style));
+                                        return SideTitleWidget(
+                                                                meta: meta,
+                                                                space: 4,
+                                                                child: Text(text, style: style),
+                                                              );
                                       },
                                     ),
                                   ),

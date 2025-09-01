@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // <-- 1. NOVA IMPORTAÇÃO
 import '../models/turma.dart';
 import 'tela_da_turma.dart';
 import '../services/persistencia_service.dart';
@@ -50,7 +51,8 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
   // Função que exibe a janela de diálogo para criar ou editar uma turma.
   void _mostrarDialogoTurma({Turma? turmaExistente}) {
     final bool isEditing = turmaExistente != null;
-    final nomeController = TextEditingController(text: isEditing ? turmaExistente.nome : '');
+    final nomeController =
+        TextEditingController(text: isEditing ? turmaExistente.nome : '');
 
     showDialog(
       context: context,
@@ -101,7 +103,48 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Minhas Turmas')),
+      appBar: AppBar(
+        title: const Text('Minhas Turmas'),
+        // --- 2. NOVO CÓDIGO ADICIONADO AQUI ---
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: () async {
+              // Pede confirmação antes de sair
+              bool? confirmarSaida = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirmar Saída'),
+                    content: const Text('Você tem a certeza de que quer sair?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancelar'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      ),
+                      TextButton(
+                        child: const Text('Sair'),
+                        onPressed: () {
+                          Navigator.of(context).pop(true);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              // Se o utilizador confirmar, faz logout no Firebase
+              if (confirmarSaida == true) {
+                await FirebaseAuth.instance.signOut();
+              }
+            },
+          ),
+        ],
+        // --- FIM DO NOVO CÓDIGO ---
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _turmas.isEmpty
@@ -138,23 +181,25 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
                       child: Card(
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             foregroundColor: Colors.white,
                             child: Text(turma.nome.substring(0, 1).toUpperCase()),
                           ),
-                          title: Text(turma.nome, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text("${turma.provas.fold(0, (total, prova) => total + prova.correcoes.length)} correções • ${turma.provas.length} provas"),
-                          
-                          // --- CORREÇÃO APLICADA AQUI ---
+                          title: Text(turma.nome,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                              "${turma.provas.fold(0, (total, prova) => total + prova.correcoes.length)} correções • ${turma.provas.length} provas"),
+
                           trailing: IconButton(
                             icon: Icon(
                               Icons.edit,
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                            onPressed: () => _mostrarDialogoTurma(turmaExistente: turma),
+                            onPressed: () =>
+                                _mostrarDialogoTurma(turmaExistente: turma),
                           ),
-                          // --- FIM DA CORREÇÃO ---
-
                           onTap: () {
                             Navigator.push(
                               context,

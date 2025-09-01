@@ -1,7 +1,8 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
@@ -15,6 +16,10 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await FirebaseAppCheck.instance.activate(
+      androidProvider: AndroidProvider.playIntegrity, 
+  );
+
   final cameras = await availableCameras();
   firstCamera = cameras.first;
   runApp(const MyApp());
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color corPrincipal = Color(0xFF00295B);
-    const Color corDestaque = Color(0xFFFFA000);
+    const Color corDestaque = Color.fromARGB(255, 255, 255, 255);
     final textTheme = Theme.of(context).textTheme;
 
     return MaterialApp(
@@ -56,7 +61,7 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: corDestaque, // Usa a cor de destaque
+          backgroundColor: corPrincipal, // Usa a cor de destaque
           foregroundColor: Colors.white,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(

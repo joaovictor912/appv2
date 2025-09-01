@@ -13,67 +13,71 @@ class TelaListaCorrecoes extends StatelessWidget {
   const TelaListaCorrecoes({super.key, required this.prova});
 
   Future<void> _exportarRelatorioExcel(BuildContext context) async {
-    if (prova.correcoes.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nenhuma correção para exportar.")),
+  if (prova.correcoes.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Nenhuma correção para exportar.")),
+    );
+    return;
+  }
+
+  var excel = Excel.createExcel();
+  Sheet sheetObject = excel['Resultados'];
+
+  // Define os estilos
+  var headerStyle = CellStyle(bold: true);
+  var redTextStyle = CellStyle(
+  fontColorHex: ExcelColor.fromHexString("FFFF0000"), // corrigido
+);
+
+  // Cabeçalho
+  sheetObject.appendRow([
+    TextCellValue("Nome do Aluno"),
+    TextCellValue("Nota"),
+    TextCellValue("Acertos")
+  ]);
+
+  // Estilo do cabeçalho
+  sheetObject.cell(CellIndex.indexByString("A1")).cellStyle = headerStyle;
+  sheetObject.cell(CellIndex.indexByString("B1")).cellStyle = headerStyle;
+  sheetObject.cell(CellIndex.indexByString("C1")).cellStyle = headerStyle;
+
+  // Linhas de dados
+  for (int i = 0; i < prova.correcoes.length; i++) {
+    final correcao = prova.correcoes[i];
+
+    sheetObject.appendRow([
+      TextCellValue(correcao.nomeAluno),
+      DoubleCellValue(correcao.nota),
+      IntCellValue(correcao.acertos),
+    ]);
+
+    // Se nota < 6 → deixa vermelho
+    if (correcao.nota < 6.0) {
+      var cell = sheetObject.cell(
+        CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1),
       );
-      return;
-    }
-
-    var excel = Excel.createExcel();
-    Sheet sheetObject = excel['Resultados'];
-
-    // Define os estilos que vamos usar
-    var headerStyle = CellStyle(bold: true);
-    var redTextStyle = CellStyle(fontColorHex: "#FFFF0000");
-
-    // --- CÓDIGO CORRIGIDO ---
-    // Adiciona o cabeçalho com os valores de texto diretamente
-    sheetObject.appendRow(['Nome do Aluno', 'Nota', 'Acertos']);
-    
-    // Aplica o estilo de negrito ao cabeçalho
-    sheetObject.cell(CellIndex.indexByString("A1")).cellStyle = headerStyle;
-    sheetObject.cell(CellIndex.indexByString("B1")).cellStyle = headerStyle;
-    sheetObject.cell(CellIndex.indexByString("C1")).cellStyle = headerStyle;
-
-
-    // Adiciona uma linha para cada correção
-    for (int i = 0; i < prova.correcoes.length; i++) {
-      final correcao = prova.correcoes[i];
-
-      // Adiciona os valores (String, double, int) diretamente na lista.
-      sheetObject.appendRow([
-        correcao.nomeAluno, 
-        correcao.nota,
-        correcao.acertos
-      ]);
-
-      // Aplica a formatação condicional se a nota for menor que 6.
-      if (correcao.nota < 6.0) {
-        // Pega a célula da nota na linha que acabamos de adicionar
-        var cell = sheetObject.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: i + 1));
-        // Aplica o estilo de texto vermelho
-        cell.cellStyle = redTextStyle;
-      }
-    }
-    // --- FIM DA CORREÇÃO ---
-
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final path = "${directory.path}/relatorio_${prova.nome.replaceAll(' ', '_')}.xlsx";
-      
-      final fileBytes = excel.encode();
-      if (fileBytes != null) {
-        File(path)
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(fileBytes);
-
-        await Share.shareXFiles([XFile(path)], text: 'Relatório da Prova: ${prova.nome}');
-      }
-    } catch (e) {
-      print("Erro ao exportar Excel: $e");
+      cell.cellStyle = redTextStyle;
     }
   }
+
+  try {
+    final directory = await getApplicationDocumentsDirectory();
+    final path =
+        "${directory.path}/relatorio_${prova.nome.replaceAll(' ', '_')}.xlsx";
+
+    final fileBytes = excel.encode();
+    if (fileBytes != null) {
+      File(path)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(fileBytes);
+
+      await Share.shareXFiles([XFile(path)],
+          text: 'Relatório da Prova: ${prova.nome}');
+    }
+  } catch (e) {
+    print("Erro ao exportar Excel: $e");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
