@@ -57,19 +57,3 @@ O sistema opera em uma arquitetura cliente-servidor, onde as responsabilidades s
         * **Veredito Final (IA - Classificador):** Apenas a imagem da bolha candidata é enviada para o segundo modelo de IA do Roboflow, que dá o veredito final, confirmando se ela está de fato "marcada".
 4.  **Resposta (Python):** O servidor monta um objeto JSON com as respostas do aluno (ex: `{"1": "C", "2": "A", "3": "N/A"}`) e o retorna para o aplicativo.
 5.  **Exibição (Flutter):** O app recebe o JSON, o decodifica e o utiliza para calcular a nota e exibir os resultados na `TelaResultado`.
-
-## Como Executar o Projeto
-
-### Backend (Servidor Python)
-
-1.  **Clone o repositório do backend.**
-2.  **Instale as dependências:**
-    ```bash
-    pip install Flask opencv-python numpy imutils roboflow
-    ```
-3.  **Configure suas chaves:** Preencha as variáveis de API KEY, Workspace ID e nomes dos projetos do Roboflow no topo do script `app.py`.
-4.  **Execute o servidor localmente:**
-    ```bash
-    python app.py
-    ```
-5.  Para produção, faça o deploy deste script em uma plataforma como o Render.
