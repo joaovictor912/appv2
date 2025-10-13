@@ -4,9 +4,7 @@ from flask import Flask, request, jsonify
 import imutils
 from roboflow import Roboflow
 
-# --- INÍCIO: CONFIGURAÇÃO COMPLETA ---
-# PREENCHA COM OS SEUS DADOS
-RF_API_KEY = "BYlcOctKDIP4438AfrHz"
+RF_API_KEY = "SHHH!!!"
 RF_WORKSPACE_ID = "gabaritos-h9iie"
 
 # Modelo 1: Detetor de Gabarito
@@ -16,10 +14,7 @@ DETECTOR_VERSION = 1
 # Modelo 2: Classificador de Bolhas
 CLASSIFIER_PROJECT_NAME = "classificador-de-alternativas"
 CLASSIFIER_VERSION = 1
-# --- FIM: CONFIGURAÇÃO COMPLETA ---
 
-
-# --- INICIALIZAÇÃO DOS MODELOS ---
 rf = Roboflow(api_key=RF_API_KEY)
 workspace = rf.workspace(RF_WORKSPACE_ID)
 
@@ -32,8 +27,6 @@ detector_model = detector_version.model
 classifier_project = workspace.project(CLASSIFIER_PROJECT_NAME)
 classifier_version = classifier_project.version(CLASSIFIER_VERSION)
 classificador_model = classifier_version.model
-# --- FIM: INICIALIZAÇÃO ---
-
 
 app = Flask(__name__)
 
@@ -88,7 +81,6 @@ def analisar_prova():
     for i in np.arange(0, len(bolhas_cnts), 5):
         linha_atual_cnts = sorted(bolhas_cnts[i:i+5], key=lambda c: cv2.boundingRect(c)[0])
         
-        # --- LÓGICA HÍBRIDA FINAL ---
         # 1. Filtro rápido com matemática para encontrar o candidato mais provável
         densidades = [classificar_bolha_com_matematica(folha_corrigida[cv2.boundingRect(c)[1]:cv2.boundingRect(c)[1]+cv2.boundingRect(c)[3], cv2.boundingRect(c)[0]:cv2.boundingRect(c)[0]+cv2.boundingRect(c)[2]]) for c in linha_atual_cnts]
         
@@ -106,8 +98,6 @@ def analisar_prova():
         escolha_aluno = "N/A"
         if status_ia == "marcada":
             escolha_aluno = alternativas[idx_candidato]
-
-        # --- FIM DA LÓGICA HÍBRIDA FINAL ---
 
         numero_questao = str((i // 5) + 1)
         respostas_mapeadas[numero_questao] = escolha_aluno
