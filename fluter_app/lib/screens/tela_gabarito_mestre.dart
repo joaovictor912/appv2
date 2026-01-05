@@ -3,13 +3,13 @@ import '../models/prova.dart';
 
 class TelaGabaritoMestre extends StatefulWidget {
   final Prova prova;
-  // MUDANÇA 1: Adicionamos o callback.
+
   final VoidCallback onGabaritoSalvo;
 
   const TelaGabaritoMestre({
     super.key,
     required this.prova,
-    required this.onGabaritoSalvo, // MUDANÇA 2: Tornamos obrigatório.
+    required this.onGabaritoSalvo, 
   });
 
   @override
@@ -39,7 +39,6 @@ class _TelaGabaritoMestreState extends State<TelaGabaritoMestre> {
                 widget.prova.gabaritoOficial = _respostas;
               });
 
-              // MUDANÇA 3: Chamamos a função de callback.
               widget.onGabaritoSalvo();
 
               ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +50,6 @@ class _TelaGabaritoMestreState extends State<TelaGabaritoMestre> {
         ],
       ),
       body: ListView.builder(
-        // O resto do código continua o mesmo...
         itemCount: widget.prova.numeroDeQuestoes,
         itemBuilder: (context, index) {
           final int numeroQuestao = index + 1;
